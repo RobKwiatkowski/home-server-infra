@@ -27,6 +27,9 @@ cp .env.example .env
 docker compose up -d
 ```
 
+Set `HOMEPAGE_VAR_PORTAINER_API_KEY` in `.env` to enable the Portainer
+containers widget.
+
 ## Restart
 
 ```bash

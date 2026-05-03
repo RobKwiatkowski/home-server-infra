@@ -41,6 +41,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - HOMEPAGE_ALLOWED_HOSTS=myhouse.local,localhost
+      - HOMEPAGE_VAR_PORTAINER_API_KEY=${HOMEPAGE_VAR_PORTAINER_API_KEY:-}
     networks:
       - home_net
     restart: unless-stopped

@@ -18,6 +18,12 @@
         href: http://myhouse.local:9000
         description: Docker management UI
         icon: portainer
+        widget:
+          type: portainer
+          url: http://portainer:9000
+          env: 1
+          key: "{{HOMEPAGE_VAR_PORTAINER_API_KEY}}"
+          fields: ["running", "stopped", "total"]
 
     - Glances:
         href: http://myhouse.local:61208
