@@ -42,6 +42,7 @@ services:
     environment:
       - HOMEPAGE_ALLOWED_HOSTS=myhouse.local,localhost
       - HOMEPAGE_VAR_PORTAINER_API_KEY=${HOMEPAGE_VAR_PORTAINER_API_KEY:-}
+      - HOMEPAGE_VAR_PORTAINER_ENV_ID=${HOMEPAGE_VAR_PORTAINER_ENV_ID:-1}
     networks:
       - home_net
     restart: unless-stopped

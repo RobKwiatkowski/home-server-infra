@@ -28,7 +28,8 @@ docker compose up -d
 ```
 
 Set `HOMEPAGE_VAR_PORTAINER_API_KEY` in `.env` to enable the Portainer
-containers widget.
+containers widget. If the widget says it cannot find the environment, set
+`HOMEPAGE_VAR_PORTAINER_ENV_ID` to the matching Portainer environment ID.
 
 ## Restart
 
