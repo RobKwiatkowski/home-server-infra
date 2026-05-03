@@ -24,14 +24,6 @@
         description: RPi system metrics
         icon: mdi-chart-line
 
-    - MySpeed:
-        href: http://myhouse.local:5216
-        description: Testy predkosci internetu
-        icon: mdi-speedometer
-        widget:
-          type: myspeed
-          url: http://myspeed:5216
-
     - System:
       - CPU:
           icon: mdi-cpu-64-bit
@@ -49,3 +41,10 @@
             version: 4
             metric: memory
 
+      - MySpeed:
+          href: http://myhouse.local:5216
+          description: Testy predkosci internetu
+          icon: mdi-speedometer
+          widget:
+            type: myspeed
+            url: http://myspeed:5216
