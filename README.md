@@ -1,4 +1,4 @@
-# Home Server Dashboard
+# Home Server Dashboard & Infrastructure
 
 Configuration for my Raspberry Pi home server dashboard.
 
