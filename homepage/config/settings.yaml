@@ -1,0 +1,7 @@
+title: Home Server
+theme: dark
+color: slate
+layout:
+  Apps:
+    style: row
+    columns: 3

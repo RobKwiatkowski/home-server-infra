@@ -1,0 +1,23 @@
+http://myhouse.local {
+    handle_path /whoami* {
+        reverse_proxy whoami:80
+    }
+
+    handle_path /home-api* {
+        reverse_proxy home-webserver-backend:8000
+    }
+
+    reverse_proxy homepage:3000
+}
+
+:80 {
+    handle_path /quiz-api* {
+        reverse_proxy quiz-backend:8000
+    }
+
+    handle_path /whoami* {
+        reverse_proxy whoami:80
+    }
+
+    reverse_proxy homepage:3000
+}

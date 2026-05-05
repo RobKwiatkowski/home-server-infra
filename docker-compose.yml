@@ -1,0 +1,103 @@
+services:
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    ports:
+      - "80:80"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - home_net
+      - quiz_net
+      - home_webserver_net
+    restart: unless-stopped
+
+  whoami:
+    image: traefik/whoami:latest
+    container_name: whoami
+    networks:
+      - home_net
+    restart: unless-stopped
+  
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - home_net
+    restart: unless-stopped
+  
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    volumes:
+      - ./homepage/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - HOMEPAGE_ALLOWED_HOSTS=${HOMEPAGE_ALLOWED_HOSTS:-myhouse.local,localhost,127.0.0.1}
+      - HOMEPAGE_VAR_PORTAINER_API_KEY=${HOMEPAGE_VAR_PORTAINER_API_KEY:-}
+      - HOMEPAGE_VAR_PORTAINER_ENV_ID=${HOMEPAGE_VAR_PORTAINER_ENV_ID:-1}
+    networks:
+      - home_net
+    restart: unless-stopped
+
+  glances:
+    image: nicolargo/glances:latest-full
+    container_name: glances
+    ports:
+      - "61208:61208"
+    pid: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/host:ro
+    environment:
+      - GLANCES_OPT=-w --bind 0.0.0.0
+    networks:
+      - home_net
+    restart: unless-stopped
+
+  myspeed:
+    image: germannewsmaker/myspeed:latest
+    container_name: myspeed
+    ports:
+      - "5216:5216"
+    volumes:
+      - myspeed_data:/myspeed/data
+    networks:
+      - home_net
+    restart: unless-stopped
+    
+  quiz-backend:
+    image: kwiaci/quiz-webapp-backend:latest
+    container_name: quiz-backend
+    restart: unless-stopped
+    command: python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --root-path /quiz-api    
+    expose:
+      - "8000"
+    networks:
+      - home_net
+
+
+networks:
+  home_net:
+    name: home_net
+
+  quiz_net:
+    external: true
+    name: quiz_webapp_default
+
+  home_webserver_net:
+    external: true
+    name: home-webserver_default
+
+volumes:
+  caddy_data:
+  caddy_config:
+  portainer_data:
+  myspeed_data:

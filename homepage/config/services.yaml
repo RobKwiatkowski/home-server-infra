@@ -1,0 +1,56 @@
+- Apps:
+    - Quiz:
+        href: http://serverpi.local:8081
+        description: Aplikacja edukacyjna
+        icon: mdi-school
+
+    - Notes:
+        href: http://serverpi.local:8082
+        description: Aplikacja notatek
+        icon: mdi-note-text
+
+    - Caddy test:
+        href: http://serverpi.local/whoami
+        description: Test reverse proxy
+        icon: mdi-server
+
+    - Portainer:
+        href: http://serverpi.local:9000
+        description: Docker management UI
+        icon: portainer
+        widget:
+          type: portainer
+          url: http://portainer:9000
+          env: "{{HOMEPAGE_VAR_PORTAINER_ENV_ID}}"
+          key: "{{HOMEPAGE_VAR_PORTAINER_API_KEY}}"
+          fields: ["running", "stopped", "total"]
+
+    - Glances:
+        href: http://serverpi.local:61208
+        description: RPi system metrics
+        icon: mdi-chart-line
+
+- System:
+    - CPU:
+        icon: mdi-cpu-64-bit
+        widget:
+          type: glances
+          url: http://glances:61208
+          version: 4
+          metric: cpu
+
+    - Memory:
+        icon: mdi-memory
+        widget:
+          type: glances
+          url: http://glances:61208
+          version: 4
+          metric: memory
+
+    - MySpeed:
+        href: http://serverpi.local:5216
+        description: Testy predkosci internetu
+        icon: mdi-speedometer
+        widget:
+          type: myspeed
+          url: http://myspeed:5216
