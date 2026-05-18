@@ -1,4 +1,5 @@
 import json
+import socket
 import subprocess
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -8,8 +9,29 @@ PORT = 8099
 
 
 def get_hostname_ips():
-    output = subprocess.check_output(["hostname", "-I"], text=True).strip()
-    return [ip for ip in output.split() if ip]
+    result = subprocess.run(
+        ["hostname", "-I"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    output = result.stdout.strip()
+    if result.returncode == 0 and output:
+        return output, [ip for ip in output.split() if ip], None
+
+    error = result.stderr.strip() or f"hostname -I exited with {result.returncode}"
+    return "", [], error
+
+
+def get_route_ip():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        sock.connect(("1.1.1.1", 80))
+        return sock.getsockname()[0], None
+    except OSError as exc:
+        return "", str(exc)
+    finally:
+        sock.close()
 
 
 def choose_primary_ip(ips):
@@ -21,19 +43,25 @@ def choose_primary_ip(ips):
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        try:
-            ips = get_hostname_ips()
-            primary_ip = choose_primary_ip(ips)
-            payload = {
-                "primary_ip": primary_ip,
-                "hostname_I": " ".join(ips),
-                "quiz_url": f"http://{primary_ip}:8081" if primary_ip else "",
-                "updated_at": datetime.now(timezone.utc).isoformat(),
-            }
-            status = 200
-        except Exception as exc:
-            payload = {"error": str(exc)}
-            status = 500
+        hostname_output, ips, command_error = get_hostname_ips()
+        primary_ip = choose_primary_ip(ips)
+
+        route_error = None
+        if not primary_ip:
+            primary_ip, route_error = get_route_ip()
+
+        payload = {
+            "primary_ip": primary_ip,
+            "hostname_I": hostname_output or primary_ip,
+            "quiz_url": f"http://{primary_ip}:8081" if primary_ip else "",
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
+        if command_error:
+            payload["hostname_error"] = command_error
+        if route_error:
+            payload["route_error"] = route_error
+
+        status = 200
 
         body = json.dumps(payload).encode("utf-8")
         self.send_response(status)
